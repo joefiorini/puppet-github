@@ -24,6 +24,13 @@ define github::key (
   IdentityFile ${keypath}"
   }
 
+  file { "${path}/known-hosts":
+    ensure => file,
+    owner  => "staticly",
+    group  => "staticly",
+    source => "puppet:///modules/github/known_hosts"
+  }
+
   if $type == 'user' {
     $url = "/user/keys"
   } else {
