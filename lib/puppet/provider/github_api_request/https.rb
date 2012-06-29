@@ -21,6 +21,7 @@ Puppet::Type.type(:github_api_request).provide(:https) do
     http = Net::HTTP.new uri.host, uri.port
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    Puppet.debug("Making #{type} request to #{uri.inspect} with headers:\n\n #{auth_header.inspect} \n\nand body:\n\n#{body.inspect}")
     http.start do |http|
       args = [:"request_#{type}", uri.path, body, auth_header].compact
       http.send(*args)
@@ -30,6 +31,7 @@ Puppet::Type.type(:github_api_request).provide(:https) do
   def api_response type, url, body=nil, &block
     response = execute_request type, url, body
     response.value
+    Puppet.debug("Received response #{response.class.name} with body:\n\n#{response.body.inspect}")
     if block_given?
       block.call JSON.parse(response.body)
     end
