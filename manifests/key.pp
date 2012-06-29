@@ -2,7 +2,8 @@ define github::key (
   $path = undef,
   $token = undef,
   $type = 'user',
-  $name = undef
+  $name = undef,
+  $systemuser = undef
 ) {
   $keypath = "${path}/${name}-github"
 
@@ -12,6 +13,15 @@ define github::key (
     user    => $systemuser,
     cwd     => $path,
     path    => ["/usr/bin"]
+  } ->
+  file { "github::ssh/config":
+    name    => "${path}/config",
+    ensure  => file,
+    owner   => "staticly",
+    content => "Host gh-${name}
+  Hostname github.com
+  User git
+  IdentityFile ${keypath}"
   }
 
   if $type == 'user' {
