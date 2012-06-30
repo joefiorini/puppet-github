@@ -5,8 +5,9 @@ Puppet::Type.type(:github_api_request).provide(:https) do
 
   def exists?
     api_response(:get, resource[:url]) do |parsed_response|
-      existing = parsed_response.select{|h| h.values.include? parsed_params["key"]}
-      existing.any?
+      parsed_response.any? do |h|
+        h.values.include? parsed_params["key"]
+      end
     end
   end
 
@@ -21,7 +22,7 @@ Puppet::Type.type(:github_api_request).provide(:https) do
     http = Net::HTTP.new uri.host, uri.port
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    Puppet.debug("Making #{type} request to #{uri.inspect} with headers:\n\n #{auth_header.inspect} \n\nand body:\n\n#{body.inspect}")
+    Puppet.debug("Making #{type} request to #{uri.inspect} with headers:\n\n #{auth_header.inspect} \n\nand body:\n\n#{body}")
     http.start do |http|
       args = [:"request_#{type}", uri.path, body, auth_header].compact
       http.send(*args)
@@ -54,7 +55,7 @@ Puppet::Type.type(:github_api_request).provide(:https) do
     if value_with_fn.length > 1
       case value_with_fn.first
       when 'read_file':
-        File.read value_with_fn.last
+        File.read(value_with_fn.last).strip
       else
         value
       end
@@ -62,4 +63,5 @@ Puppet::Type.type(:github_api_request).provide(:https) do
       value
     end
   end
+
 end
