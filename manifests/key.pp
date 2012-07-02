@@ -24,11 +24,12 @@ define github::key (
   IdentityFile ${keypath}"
   }
 
-  file { "${path}/known-hosts":
-    ensure => file,
-    owner  => "staticly",
-    group  => "staticly",
-    source => "puppet:///modules/github/known_hosts"
+  exec { "github::ssh-known-hosts":
+    command   => "ssh-keyscan -t rsa github.com >> /home/${systemuser}/.ssh/known_hosts",
+    user      => $systemuser,
+    logoutput => on_failure,
+    cwd       => $path,
+    path      => ["/usr/bin"]
   }
 
   if $type == 'user' {
