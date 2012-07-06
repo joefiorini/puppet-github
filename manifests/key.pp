@@ -35,7 +35,7 @@ define github::key (
   if $type == 'user' {
     $url = "/user/keys"
   } else {
-    $url = "/repo/$repo/keys"
+    $url = "/repos/$name/keys"
   }
 
   github_api_request { "${url}":
