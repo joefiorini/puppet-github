@@ -3,6 +3,7 @@ define github::key (
   $token = undef,
   $type = 'user',
   $name = undef,
+  $full_name = undef,
   $systemuser = undef
 ) {
   $keypath = "${path}/${name}-github"
@@ -35,7 +36,7 @@ define github::key (
   if $type == 'user' {
     $url = "/user/keys"
   } else {
-    $url = "/repos/$name/keys"
+    $url = "/repos/$full_name/keys"
   }
 
   github_api_request { "${url}":
